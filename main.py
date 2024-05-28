@@ -34,7 +34,7 @@ def load_and_transform_images(directory, size):
 
     return transformed_images
 
-monsters = load_and_transform_images('monster',(150,150))
+monsters = load_and_transform_images('monster',(150,150)) # подгружаем картинки зомби
 spider_attack = load_and_transform_images('spider_attack', (300,300))
 spider_walk = load_and_transform_images('spider_walk', (300,300))
 spider_stand = load_and_transform_images('spider_stand', (300,300))
@@ -767,5 +767,5 @@ while True:
         #tower.fire()
     display.update()
     timer.tick(60)
-#! Доделать стреры вылет из башен, запуск Q
+# паук перестает идти к персанажу в левой части, проработать логику выпрыгивания с карты
 
