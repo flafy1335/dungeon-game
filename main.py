@@ -1,13 +1,13 @@
 import pygame
 from pygame import *
 import sys
-from os.path import join, getsize
 import os
 import random 
 
 window = display.set_mode((700, 500))
 timer = pygame.time.Clock()
 
+# функция для подгрузки картинок из папки и установки размера
 def load_and_transform_images(directory, size):
     """
     Загружает все изображения из указанной директории, изменяет их размер до заданного и добавляет в список.
@@ -41,6 +41,7 @@ spider_stand = load_and_transform_images('spider_stand', (300,300))
 spider_jump = load_and_transform_images('spider_jump', (300,300))
 torch_images = load_and_transform_images('torch', (70,70))
 
+# класс описывающий босса(паука)
 class Spider:
     def __init__(self,textures_stand, textures_attack, textures_walk, textures_jump,
                  x,y, direction,hp,speed):
@@ -62,7 +63,7 @@ class Spider:
         self.stand_right = []
         self.jump_right = []
         self.status = 'walk'
-        self.hpbar = Hp(x=self.x, y=self.y, height=10, width=100, picture_red='red_square.png', picture_green='green_square.png')
+        self.hpbar = Hp(x=self.x, y=self.y, height=10, width=100, picture_red='hp/red_square.png', picture_green='hp/green_square.png')
         for texture in self.attack_left:
             texture = transform.flip(texture, True, False)
             self.attack_right.append(texture)
@@ -75,7 +76,6 @@ class Spider:
         for texture in self.jump_left:
             texture = transform.flip(texture, True, False)
             self.jump_right.append(texture)
-        self.hpbar = Hp(x=self.x, y=self.y, height=10, width=100, picture_red='red_square.png', picture_green='green_square.png')
         self.picture = self.stand_left[0]
         self.mask = pygame.mask.from_surface(self.picture)
         self.mask_stand_left = pygame.mask.from_surface(self.stand_left[0])
@@ -215,6 +215,7 @@ class Spider:
         self.hpbar.y = self.y
         self.hpbar.picture_green = pygame.transform.scale(self.hpbar.picture_green, (self.hpbar.width/self.maxhp*self.hp, 10))
 
+# класс описывающий факел
 class Torch:
     def __init__(self,x,y,textures):
         self.x = x
@@ -235,10 +236,7 @@ class Torch:
         self.animation()
         window.blit(self.picture, (self.x, self.y))
 
-
-
-
-
+# класс описывающий зомби
 class Monster:
     def __init__(self,textures, x, y, direction, hp, aktiv_zone_high, aktiv_zone_width, speed):
         self.textures_right = textures
@@ -247,13 +245,14 @@ class Monster:
         self.speed = speed
         self.textures_left = []
         self.hp = hp
+        self.width = 100
         self.maxhp = hp
         for texture in self.textures_right:
             texture = transform.flip(texture, True, False)
             self.textures_left.append(texture)
         self.x = x
         self.y = y
-        self.hpbar = Hp(x=self.x, y=self.y, height=10, width=100, picture_red='red_square.png', picture_green='green_square.png')
+        self.hpbar = Hp(x=self.x, y=self.y, height=10, width=100, picture_red='hp/red_square.png', picture_green='hp/green_square.png')
         self.direction = direction #направление
         self.slow_counter = 0   #счетчик замедления
         self.animation_counter = 0 #счетчик анимации
@@ -323,8 +322,8 @@ class Monster:
             self.x = new_x
         if can_move_y == True:
             self.y = new_y
-
-            
+ 
+# класс описывающий игрока
 class Player:
     def __init__(self, picture, width, height, x, y, textures, direction, room, sword_textures):
         self.textures = textures
@@ -520,6 +519,8 @@ class Player:
             self.atack_flag = False
             self.animation()
             self.atack_counter = 0
+
+# класс пол
 class Floor:
     def __init__(self, picture, width, height, x, y):
         self.x = x
@@ -531,6 +532,7 @@ class Floor:
     def show(self):
         window.blit(self.picture, (self.x, self.y))
 
+# класс описывающий здоровье
 class Hp:
     def __init__(self, x, y, height, width, picture_red, picture_green):
         self.x = x
@@ -545,8 +547,7 @@ class Hp:
         window.blit(self.picture_red, (self.x, self.y))
         window.blit(self.picture_green, (self.x, self.y))
 
-
-
+# класс стены
 class Wall:
     def __init__(self, 
                  picture, width, height, x, y):
@@ -561,6 +562,7 @@ class Wall:
     def show(self):
         window.blit(self.picture, (self.x, self.y))
 
+# класс двери
 class Door:
     def __init__(self, picture, width, height, x, y, nextroom, newx, newy):
         self.newx = newx
@@ -577,6 +579,7 @@ class Door:
     def show(self):
         window.blit(self.picture, (self.x, self.y))
 
+# класс стрелы
 class Arrow:
     def __init__(self, picture, width, height, x, y):
         self.x = x
@@ -591,6 +594,7 @@ class Arrow:
         window.blit(self.picture, (self.x, self.y))
         self.y -= self.speed
 
+# класс описывающий башни
 class Tower:
     def __init__(self, width, height, x, y, shoot):
         self.x = x
@@ -613,7 +617,7 @@ class Tower:
     def show(self):
         window.blit(self.picture, (self.x, self.y))
 
-
+# класс описывающий сундуки
 class Chest:
     def __init__(self, picture, width, height, x, y, picture_close, status, picture_gold):
         self.x = x
@@ -637,7 +641,7 @@ class Chest:
         if self.status == 'gold':
             window.blit(self.picture_gold, (self.x, self.y))
         
-
+# класс описывающий комнаты
 class Room:
     def __init__(self, room_map, objects, doors, chests, dekoration,):
         self.doors = doors
@@ -695,18 +699,18 @@ class Room:
 
 
 link_textures = [
-    'zelda_go_1.png',
-    'zelda_go_2.png',
-    'zelda_go_3.png',
-    'zelda_go_4.png',
-    'zelda_go.png',
+    'zelda_go/zelda_go_1.png',
+    'zelda_go/zelda_go_2.png',
+    'zelda_go/zelda_go_3.png',
+    'zelda_go/zelda_go_4.png',
+    'zelda_go/zelda_go.png',
 ]
 
 link_textures_sword = [
-    'zelda_sword_1.png',
-    'zelda_sword_2.png',
-    'zelda_sword_3.png',
-    'zelda_sword_4.png',
+    'zelda_sword/zelda_sword_1.png',
+    'zelda_sword/zelda_sword_2.png',
+    'zelda_sword/zelda_sword_3.png',
+    'zelda_sword/zelda_sword_4.png',
 ]
 
 #создаем противников
@@ -714,30 +718,36 @@ spider = Spider(textures_stand=spider_stand, textures_walk=spider_walk, textures
 monster1 = Monster(textures=monsters, x=600, y=300, direction='left', hp=100, aktiv_zone_high=100, aktiv_zone_width=100, speed=1)
 monster2 = Monster(textures=monsters, x=10, y=350, direction='left', hp=100, aktiv_zone_high=100, aktiv_zone_width=100, speed=2)
 monster3 = Monster(textures=monsters, x=600, y=30, direction='left', hp=100, aktiv_zone_high=100, aktiv_zone_width=100, speed=1)
+
 #двери
 door = Door(picture='door/dd31cc050e0f4a51cc516c24bb792899U7hZdRHEiVh2Z38U-0.png', width=60, height=80, x=5, y=5, nextroom=2, newx=50, newy=50)
 door2 = Door(picture='door/dd31cc050e0f4a51cc516c24bb792899U7hZdRHEiVh2Z38U-0.png', width=60, height=80, x=600, y=400, nextroom=1, newx=50, newy=50)
 door3 = Door(picture='door/dd31cc050e0f4a51cc516c24bb792899U7hZdRHEiVh2Z38U-0.png', width=60, height=80, x=10, y=400, nextroom=3, newx=400, newy=350)
+
 #создаем сундуки
-testchest = Chest(picture='chest_empty.png', width=40, height=60, x=550, y=0, picture_close='chest_lock.png', status='close', picture_gold='chest_gold.png')
-testchest2 = Chest(picture='chest_empty.png', width=40, height=60, x=300, y=450, picture_close='chest_lock.png', status='gold', picture_gold='chest_gold.png')
-testchest3 = Chest(picture='chest_empty.png', width=40 ,height=60, x=300, y=450, picture_close='chest_lock.png', status='gold',picture_gold='chest_gold.png')
+testchest = Chest(picture='chest/chest_empty.png', width=40, height=60, x=550, y=0, picture_close='chest/chest_lock.png', status='close', picture_gold='chest/chest_gold.png')
+testchest2 = Chest(picture='chest/chest_empty.png', width=40, height=60, x=300, y=450, picture_close='chest/chest_lock.png', status='gold', picture_gold='chest/chest_gold.png')
+testchest3 = Chest(picture='chest/chest_empty.png', width=40 ,height=60, x=300, y=450, picture_close='chest/chest_lock.png', status='gold',picture_gold='chest/chest_gold.png')
+
 #факел
 torch1 = Torch(textures=torch_images, x=0, y=-25)
 torch2 = Torch(textures=torch_images, x=630, y=-25)
 torch3 = Torch(textures=torch_images, x=0, y=385)
 torch4 = Torch(textures=torch_images, x=630, y=385)
 arrow = Arrow(width=100, height=100, x=200, y=200, picture='стрела.png')
+
 #создаем комнаты
-testroom = Room(objects=[monster1, monster2], room_map='map.txt', doors = [door], chests=[testchest, testchest2], dekoration=[])
+testroom = Room(objects=[monster1, monster2], room_map='map/map.txt', doors = [door], chests=[testchest, testchest2], dekoration=[])
 testroom.build()
-testroom2 = Room(objects=[monster3], room_map='map2.txt', doors =[door2, door3], chests=[testchest3], dekoration=[])
+testroom2 = Room(objects=[monster3], room_map='map/map2.txt', doors =[door2, door3], chests=[testchest3], dekoration=[])
 testroom2.build()
-testroom3 = Room(objects=[spider], room_map='map3.txt', doors =[], chests=[], dekoration=[torch1, torch2, torch3, torch4, arrow])
+testroom3 = Room(objects=[spider], room_map='map/map3.txt', doors =[], chests=[], dekoration=[torch1, torch2, torch3, torch4, arrow])
 testroom3.build()
+
 #создаем персонажа
 link = Player(picture='zelda_go_1.png', width=70, height=70, x=200, y=200, textures=link_textures, direction='right', room=testroom, 
               sword_textures=link_textures_sword)
+
 #башня
 koords = [(0,10),(70,10),(140,10), (210,10), (280,10), (350,10),(420,10), (490,10), (560,10), (560,430), (630,10), (630,80), (630,150), (630,220), (630,290), (630,360), (630,430),
           (0,80), (0,150), (0,220), (0,290), (0,360)]
@@ -749,10 +759,6 @@ for x,y in koords:
 for x,y in koords_shoot:
     tower = Tower(height=110, width=80, x=x-6, y=y-15, shoot = True)
     testroom3.towers.append(tower)
-
-
-
-
 
 while True:
     #здесь заканчивается загрузка и начинается игра
@@ -767,5 +773,3 @@ while True:
         #tower.fire()
     display.update()
     timer.tick(60)
-# паук перестает идти к персанажу в левой части, проработать логику выпрыгивания с карты
-
